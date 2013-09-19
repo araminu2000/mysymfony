@@ -1,0 +1,15 @@
+<VirtualHost *:80>
+    ServerName www1.mysymfony.ro
+    ServerAlias www1.mysymfony.ro
+
+    DocumentRoot /var/www/sites/mysymfony/web
+    <Directory /var/www/sites/mysymfony/web>
+        # enable the .htaccess rewrites
+        AllowOverride All
+        Order allow,deny
+        Allow from All
+    </Directory>
+
+    ErrorLog /var/www/www1.mysymfony.ro/log/error.log
+    CustomLog /var/www/www1.mysymfony.ro/log/access.log combined
+</VirtualHost>
