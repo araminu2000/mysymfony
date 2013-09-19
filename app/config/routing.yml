@@ -1,0 +1,4 @@
+ititi_parsing:
+    resource: "@ItitiParsingBundle/Resources/config/routing.yml"
+    prefix:   /
+

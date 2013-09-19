@@ -1,0 +1,3 @@
+content_home:
+    path: /home
+    defaults: {_controller: ItitiParsingBundle:Content:home}
