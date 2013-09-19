@@ -16,6 +16,11 @@ use Symfony\Component\HttpFoundation\Response;
 class ContentController extends Controller{
 
     public function homeAction() {
+        $excelService = $this->get('xls.service_xls5');
+
+        var_dump($excelService);
+
+
         return $this->render('ItitiParsingBundle:Content:home.html.twig');
     }
 }
