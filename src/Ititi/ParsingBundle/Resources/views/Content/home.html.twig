@@ -2,6 +2,10 @@
 
 {% block body %}
     <h1>Load XLS file</h1>
+    <h2>Observations:</h2>
+    <ul>
+        <li>Sheet that will be processed should be labeled: <strong>`ConsEvidBuget`</strong></li>
+    </ul>
     <form action="{{ path('content_home') }}" method="post" enctype="multipart/form-data">
     {% spaceless %}
         <div>{% set type = type|default('file') %}

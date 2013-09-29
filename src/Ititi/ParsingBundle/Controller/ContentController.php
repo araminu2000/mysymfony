@@ -17,21 +17,13 @@ use Symfony\Component\HttpFoundation\Response;
 class ContentController extends Controller{
 
     public function homeAction(Request $request) {
-
-        echo '<pre>';
         $file = $request->files->get('file');
+        $resultRows = array();
+
         if(!empty($file)) {
             $fileName = $file->getPathName();
-            $excelService = $this->get('xls.service_xls5');
-            #__DIR__.'/../../../../web/TiTi/chelt_may.xls'
             $excelObj = $this->get('xls.load_xls5')->load($fileName);
-
-
-            echo '<pre>';
-//        var_dump(get_class_methods($excelObj->getSheetByName('ConsEvidBuget')));
-            $sheet = $excelObj->getSheetByName('ConsEvidBuget');
             $data = $excelObj->getSheetByName('ConsEvidBuget')->toArray();
-
             $finalRowFormat = array(
                 'location' => '',
                 'account' => '',
@@ -45,7 +37,6 @@ class ContentController extends Controller{
             );
             $iterationRow = array();
             $iterationRows = array();
-            $resultRows = array();
 
             foreach ($data as $rowNo=>$rowInfo) {
                 if ($rowNo < 2) {
@@ -89,7 +80,6 @@ class ContentController extends Controller{
                     }
                 }
             }
-//            var_dump($iterationRows);
 
             foreach ($iterationRows as $iterationRow) {
                 if ($iterationRow['account'] == 6022) {
@@ -114,13 +104,43 @@ class ContentController extends Controller{
                     $resultRows[] = $iterationRow;
                 }
             }
-
-            var_dump($resultRows);
         }
 
-
-
+        if (!empty($resultRows)) {
+            $this->downloadXlsFile($resultRows);
+        }
 
         return $this->render('ItitiParsingBundle:Content:home.html.twig');
+    }
+
+    public function downloadXlsFile($data) {
+        $excelService = $this->get('xls.service_xls5');
+        $activeSheet = $excelService->excelObj->setActiveSheetIndex(0);
+        $header = array(
+            'location' => 'Categorie',
+            'account' => 'Cont',
+            'documentType' => 'Tip document',
+            'documentDate' => 'Data document',
+            'documentNo' => 'Numar document',
+            'place' => 'Locatie',
+            'observation' => 'Observatii',
+            'value' => 'Valoare',
+            'average_value' => 'Valoare medie',
+        );
+        array_unshift($data,$header);
+        $activeSheet->fromArray($data);
+        $excelService->excelObj->getActiveSheet()->setTitle('Sheet 1');
+
+        //create the response
+        $response = $excelService->getResponse();
+        $response->headers->set('Content-Type', 'text/vnd.ms-excel; charset=utf-8');
+        $response->headers->set('Content-Disposition', 'attachment;filename=Accountancy_' . date('Y-m-d') . '.xls');
+
+        // If you are using a https connection, you have to set those two headers and use sendHeaders() for compatibility with IE <9
+        $response->headers->set('Pragma', 'public');
+        $response->headers->set('Cache-Control', 'maxage=1');
+        $response->sendHeaders();
+        $response->sendContent();
+//        return $response;
     }
 }
